@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Farmer Dashboard - Smart Agri Network</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+      background: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center/cover;
+      background-size: cover;
+    }
+
+    header {
+      background: #2E8B57;
+      color: white;
+      padding: 10px;
+    }
+
+    h1 {
+      color: #fff;
+      text-shadow: 1px 1px 4px #000;
+    }
+
+    #map {
+      width: 100%;
+      height: 400px;
+      margin: 20px 0;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: white;
+      padding: 20px;
+      width: 50%;
+      margin: 0 auto;
+      border-radius: 12px;
+      box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    input {
+      margin: 10px;
+      padding: 10px;
+      width: 80%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      padding: 12px 20px;
+      background: #2E8B57;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    button:hover {
+      background: #26734d;
+    }
+
+    .section.farm-section {
+      background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+      padding: 20px;
+      border-radius: 12px;
+      width: 60%;
+      margin: 20px auto;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .section.farm-section h2 {
+      color: #1f2937;
+    }
+
+    #farm-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #farm-list li {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .section.flash-sales {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      padding: 20px;
+      width: 60%;
+      margin: 20px auto;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .section.flash-sales h2 {
+      color: #d7263d;
+    }
+
+    #flash-sales-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #flash-sales-list li {
+      background: #ffe5ec;
+      color: #b00020;
+      margin: 10px auto;
+      padding: 10px 15px;
+      border-radius: 8px;
+      width: 90%;
+      font-weight: bold;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>👨‍🌾 Farmer Dashboard</h1>
+
+  <div id="map"></div>
+
+  <form id="farm-form">
+    <input type="text" id="FARMNAME" placeholder="Farm Name" required />
+    <input type="text" id="FARMERNAME" placeholder="Farmer Name" required />
+    <input type="text" id="CITYNAME" placeholder="City" required />
+    <input type="number" step="any" id="LATITUDE" placeholder="Latitude" required />
+    <input type="number" step="any" id="LONGITUDE" placeholder="Longitude" required />
+    <input type="text" id="PRODUCTSAVAILABLE" placeholder="Products (comma-separated)" required />
+    <input type="text" id="FLASHSALEPRODUCT" placeholder="Flash Sale Product (e.g., Mango)" />
+    <input type="text" id="FLASHSALEPRICE" placeholder="Flash Sale Price (e.g., 60)" />
+    <input type="datetime-local" id="FLASHSALEEXPIRY" placeholder="Sale Expiry Time" />
+    <button type="submit">Add Farm</button>
+  </form>
+
+  <div class="section farm-section">
+    <h2>🗒 Registered Farms</h2>
+    <ul id="farm-list"></ul>
+  </div>
+
+  <div class="section flash-sales">
+    <h2>🔥 Flash Sales</h2>
+    <ul id="flash-sales-list"></ul>
+  </div>
+
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbztZjPoDViK4aqxqnWO19kaH_z14m13pgPz0KxnICql77FLonWR5krFvwXbcgza2KIpRQ/exec';
+    let globalFarmers = [];
+
+    async function fetchFarmers() {
+      try {
+        const response = await fetch(scriptURL);
+        const farmers = await response.json();
+        globalFarmers = farmers;
+        updateFarmersList(farmers);
+        updateFlashSales(farmers);
+        updateMap(farmers);
+      } catch (error) {
+        console.error("Failed to fetch farmers:", error);
+      }
+    }
+
+    document.getElementById("farm-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const newFarmer = {
+        FARMNAME: document.getElementById("FARMNAME").value,
+        FARMERNAME: document.getElementById("FARMERNAME").value,
+        CITYNAME: document.getElementById("CITYNAME").value,
+        LATITUDE: parseFloat(document.getElementById("LATITUDE").value),
+        LONGITUDE: parseFloat(document.getElementById("LONGITUDE").value),
+        PRODUCTSAVAILABLE: document.getElementById("PRODUCTSAVAILABLE").value.split(",").map(p => p.trim()),
+        FLASHSALEPRODUCT: document.getElementById("FLASHSALEPRODUCT").value,
+        FLASHSALEPRICE: document.getElementById("FLASHSALEPRICE").value,
+        FLASHSALEEXPIRY: document.getElementById("FLASHSALEEXPIRY").value,
+      };
+
+      try {
+        await fetch(scriptURL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(newFarmer)
+        });
+        e.target.reset();
+        fetchFarmers();
+      } catch (error) {
+        console.error("Failed to add farmer:", error);
+        alert("Failed to add farm. Please try again.");
+      }
+    });
+
+    function updateFarmersList(farmers) {
+      const list = document.getElementById("farm-list");
+      list.innerHTML = "";
+      farmers.forEach(f => {
+        const li = document.createElement("li");
+        li.textContent = `${f.FARMNAME} (${f.FARMERNAME}) - ${f.PRODUCTSAVAILABLE.join(", ")}`;
+        list.appendChild(li);
+      });
+    }
+
+    function updateFlashSales(farmers) {
+      const list = document.getElementById("flash-sales-list");
+      const now = new Date();
+      list.innerHTML = "";
+
+      farmers.forEach(f => {
+        if (
+          f.FLASHSALEPRODUCT && f.FLASHSALEPRICE && f.FLASHSALEEXPIRY &&
+          new Date(f.FLASHSALEEXPIRY) > now
+        ) {
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>${f.FLASHSALEPRODUCT}</strong> from <em>${f.FARMNAME}</em> - 
+                          ₹${f.FLASHSALEPRICE} (until ${new Date(f.FLASHSALEEXPIRY).toLocaleString()})`;
+          list.appendChild(li);
+        }
+      });
+    }
+
+    let map;
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 20.5937, lng: 78.9629 },
+        zoom: 5,
+      });
+      if (globalFarmers.length > 0) {
+        updateMap(globalFarmers);
+      }
+    }
+
+    function updateMap(farmers) {
+      if (!map) {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: 20.5937, lng: 78.9629 },
+          zoom: 5,
+        });
+      }
+
+      farmers.forEach(f => {
+        if (f.LATITUDE && f.LONGITUDE) {
+          new google.maps.Marker({
+            position: { lat: parseFloat(f.LATITUDE), lng: parseFloat(f.LONGITUDE) },
+            map,
+            title: f.FARMNAME
+          });
+        }
+      });
+    }
+
+    fetchFarmers();
+  </script>
+
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD7D6p2pSvCbr9GT3PsuJ6D2QWAAJqoPLo&callback=initMap">
+  </script>
+</body>
+</html>

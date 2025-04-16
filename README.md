@@ -1,4 +1,5 @@
 🌾 Smart Agri Network
+
 Smart Agri Network is a web-based platform designed to connect farmers, community gardens, and consumers. It allows farmers to register their farms and products, and enables customers to discover fresh, local produce using an interactive map and search functionality.
 
 🚀 Features

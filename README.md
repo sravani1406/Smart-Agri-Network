@@ -93,6 +93,7 @@ o Optional flash sale inputs: product, price, expiry
 
 • Google Maps API – Maps and farm markers
 
+
 📌 Setup Instructions
 
 1. Clone or download this repo
@@ -116,7 +117,9 @@ o Deploy the script as a web app (with doGet and doPost)
 
 • Automatically hides expired sales
 
+
 💪 Future Enhancements
+
 • Authentication using Firebase/Auth0
 
 • Farm image upload support
@@ -126,6 +129,7 @@ o Deploy the script as a web app (with doGet and doPost)
 • Countdown timer for flash sale
 
 • Mobile app integration
+
 
 👨‍💼 Developed By
 

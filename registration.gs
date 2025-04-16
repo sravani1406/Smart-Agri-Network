@@ -2,7 +2,7 @@ function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
     const action = data.action;
-    const sheet = SpreadsheetApp.openById("1HDzK1IMmXxV7wD56U_T9M96QwpBdZxKkxtdMdwjHzg0").getSheetByName("logindetails");
+    const sheet = SpreadsheetApp.openById("your_sheet_id").getSheetByName("sheet_name");
 
     if (action === "register") {
       const { name, email, password, role } = data;

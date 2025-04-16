@@ -1,4 +1,4 @@
-var sheet = SpreadsheetApp.openById("1Q086ux6dMnIeej3wVwYksSLXRw8Mo0FAR2qMJ9FyXqU").getSheetByName("Farmers");
+var sheet = SpreadsheetApp.openById("your_sheet_id").getSheetByName("sheet_name");
 
 function doGet() {
   var data = sheet.getDataRange().getValues();

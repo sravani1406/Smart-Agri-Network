@@ -21,6 +21,7 @@ Smart Agri Network is a web-based platform designed to connect farmers, communit
 📁 Project Structure
 
 📆 Smart Agri Network
+
 │
 
 ├── index.html              # Login Page

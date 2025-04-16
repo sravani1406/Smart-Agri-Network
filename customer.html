@@ -62,7 +62,7 @@
         background: #26734d;
     }
 </style>
-  <script src="https://maps.googleapis.com/maps/api/js?key=your_API_key"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key="your_API_key""></script>
 </head>
 <body>
   <h1>Customer Dashboard</h1>
@@ -103,7 +103,7 @@
 
     async function fetchFarms() {
       try {
-        const response = await fetch("https://script.google.com/macros/s/your_script_url/exec");
+        const response = await fetch("https://script.google.com/macros/s/"your_script_url"/exec");
         const data = await response.json();
         return data;
       } catch (error) {
